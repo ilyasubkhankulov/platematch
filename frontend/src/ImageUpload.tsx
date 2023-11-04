@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
+import { Button } from '@chakra-ui/react';
 import axios from 'axios';
 
-const url = 'http://localhost:8000/upload';
+const url = 'http://localhost:8000/upload/';
 
 const ImageUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
@@ -37,8 +38,8 @@ const ImageUpload = () => {
 
   return (
     <div>
-      <input type="file" accept="image/*" onChange={handleFileSelect} />
-      <button onClick={handleUpload}>Upload Image</button>
+      <input type="file" accept="*" onChange={handleFileSelect} />
+      <Button onClick={handleUpload}>Upload Image</Button>
     </div>
   );
 };
