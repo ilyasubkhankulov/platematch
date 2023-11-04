@@ -2,10 +2,12 @@ import json
 import os
 
 import aiofiles
-from fastapi import FastAPI, File, Form, UploadFile
-from pydantic import BaseModel
 
-TMP_DIR = 'objects'
+# from lib.convert_image import heic_to_png_buffer
+from constants import TMP_DIR
+from fastapi import FastAPI, File, Form, UploadFile
+from lib.convert_image import heic_to_png
+from pydantic import BaseModel
 
 app = FastAPI()
 
@@ -38,5 +40,7 @@ async def upload_image(
     path = await save_to_disk(image, TMP_DIR)
     print("image saved to disk: ", path)
 
-    return {"filename": image.filename,
+    png_location = heic_to_png(path)
+
+    return {"filename": png_location,
             "metadata": metadata_dict}

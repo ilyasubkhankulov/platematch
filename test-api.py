@@ -8,7 +8,7 @@ metadata = json.dumps({'lat': '123', 'long': '456'}) # convert dict to str
 # Prepare headers 
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-file_path = '/Users/ilya/Desktop/screenshots/lexus.png'
+file_path = '/Users/ilya/Desktop/screenshots/test.heic'
 
 with open(file_path, 'rb') as f:
     files = {'upload_file': f.read()}

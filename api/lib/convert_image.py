@@ -1,25 +1,26 @@
-import io
+import os
+from pathlib import Path
 
-import pyheif
+from constants import TMP_DIR
 from PIL import Image
+from pillow_heif import register_heif_opener
+
+register_heif_opener()
 
 
-def heic_to_png_buffer(heic_path):
-    heif_file = pyheif.read(heic_path)
-    if heif_file.size > 3000000:
-        raise Exception("File size must be lower than 3MB.")
-    image = Image.frombytes(
-        heif_file.mode, 
-        heif_file.size, 
-        heif_file.data,
-        "raw",
-        heif_file.mode,
-        heif_file.stride,
-        )
-    buffer = io.BytesIO()
-    image.save(buffer, format="PNG")
-    return buffer.getvalue()
+def heic_to_png(input_path):
+    # Load the heic image
+    image = Image.open(input_path)
 
+    # get filename w/o extension
+    filename = Path(input_path).stem
+    print(filename)
+
+    output_path = os.path.join(TMP_DIR, f"{filename}.png")
+    # Convert the image to png
+    image.save(output_path)
+
+    return output_path
 
 
 # Restrictions
