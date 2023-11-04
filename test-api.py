@@ -3,7 +3,7 @@ import json
 import requests
 
 # Prepare metadata
-metadata = {'lat': '123', 'long': '456'}
+metadata = json.dumps({'lat': '123', 'long': '456'}) # convert dict to str
 
 # Prepare headers 
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
