@@ -15,7 +15,10 @@ class ImageMetadata(BaseModel):
 
 
 @app.post("/upload/")
-async def upload_image(metadata: str = Form(...), image: UploadFile = File(...)):
+async def upload_image(
+    metadata: str = Form(...),
+    image: UploadFile = File(...)
+):
     # metadata_dict = metadata
     print(metadata)
     return {"filename": image.filename,
