@@ -2,6 +2,8 @@ import json
 import os
 
 import aiofiles
+from lib.recognize_car import recognize_car
+from lib.lookup_plate import VinResponse
 from lib.image_preprocessing import make_png_buffer, open_heic_image, resize_image
 from lib.license_plate_recognition import get_license_plate
 from lib.lookup_plate import lookup_plate
@@ -49,7 +51,7 @@ async def upload_image(metadata: str = Form(...), image: UploadFile = File(...))
     if license_plates_info.data is None:
         return "Not found any"
 
-    vin_responses = []
+    vin_responses: list[VinResponse] = []
     for result in license_plates_info.data.results:
         print(result)
         plate = result.plate
@@ -57,12 +59,16 @@ async def upload_image(metadata: str = Form(...), image: UploadFile = File(...))
         if code.split("-")[0] == "us":
             code = code.split("-")[1].upper()
         else:
-            print("not usa country")
+            return "not usa country"
 
         vin_response = lookup_plate(plate, code)
+
+        if vin_response is None:
+            return "Plate is invalid"
+
         vin_responses.append(vin_response)
 
-    ## Lookup plate
+    car_recognition = recognize_car(png_buffer)
 
     return {
         "license plates info": license_plates_info,
