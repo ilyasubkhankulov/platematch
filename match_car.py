@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class MatchResult(Enum):
     MATCH = 1
     MISMATCH = 2

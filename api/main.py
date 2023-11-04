@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Optional, Union
 
 import aiofiles
 
@@ -24,18 +25,21 @@ async def save_to_disk(image, tmp_dir):
     return path
 
 
-class ImageMetadata(BaseModel):
-    lat: str
-    long: str
+# class ImageMetadata(BaseModel):
+#     lat: str
+#     long: str
 
 
 @app.post("/upload/")
 async def upload_image(
-        metadata: str = Form(...),
-        image: UploadFile = File(...)):
+        image: UploadFile = File(...),
+        metadata: Union[str, None] = File(None)):
    
-    metadata_dict = json.loads(metadata)
-    print("inputted metadata: ", metadata_dict)
+    if (metadata is not None):
+        metadata_dict = json.loads(metadata)
+        print("inputted metadata: ", metadata_dict)
+    else:
+        metadata_dict = None
 
     path = await save_to_disk(image, TMP_DIR)
     print("image saved to disk: ", path)
