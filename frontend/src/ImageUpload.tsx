@@ -18,7 +18,8 @@ const ImageUpload = () => {
     }
 
     const formData = new FormData();
-    formData.append('file', selectedFile);
+    formData.append('image', selectedFile);
+    formData.append('metadata', "test")
 
     try {
       const response = await axios.post(url, formData, {
