@@ -1,8 +1,11 @@
 import requests
 import json
+import os
+from dotenv import load_dotenv
 
-PLATETOVIN_API_KEY='JIms37w6L2ngsSv'
-PLATETOVIN_BASE_URL='https://platetovin.com/'
+
+load_dotenv()
+PLATETOVIN_BASE_URL='https://platetovin.com'
 
 
 def lookup_plate(plate: str, state: str):
@@ -12,14 +15,16 @@ def lookup_plate(plate: str, state: str):
         "plate": plate,
     }
     headers = {
-    'Authorization': 'YOUR API KEY',
+    'Authorization': os.getenv('PLATETOVIN_API_KEY'),
     'Content-Type': 'application/json',
     'Accept': 'application/json'
     }
 
     response = requests.request('POST', url, headers=headers, json=payload)
-    response.json()
     if response.status_code == 200:
         return json.loads(response.content.decode('utf-8'))
     else:
         return None
+    
+if __name__ == '__main__':
+    print(lookup_plate('36823S2', 'CA'))
