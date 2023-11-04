@@ -10,3 +10,6 @@ def heic_to_png_buffer(heic_path):
     heic_image.save(png_buffer, format="PNG")
     png_buffer.seek(0)
     return png_buffer
+
+
+Image
