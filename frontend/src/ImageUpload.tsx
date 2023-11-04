@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from '@chakra-ui/react';
 import axios from 'axios';
 
-const url = 'http://localhost:8000/upload/';
+const url = 'http://localhost:8000/license-plate-ocr/';
 
 const ImageUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);

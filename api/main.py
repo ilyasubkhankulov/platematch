@@ -7,6 +7,7 @@ import aiofiles
 # from lib.convert_image import heic_to_png_buffer
 from constants import TMP_DIR
 from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
 from lib.image_preprocessing import make_png_buffer, open_heic_image, resize_image
 from lib.license_plate_recognition import get_license_plate
 from lib.lookup_plate import VinResponse, lookup_plate
@@ -15,6 +16,17 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
+origins = [
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["POST", "GET"],
+    allow_headers=["*"],
+)
 
 app.get("/")(lambda: {"Hello": "World"})
 
@@ -80,3 +92,17 @@ async def upload_image(
         "metadata": metadata_dict,
         "vin responses": vin_responses,
     }
+
+
+@app.post("/license-plate-ocr/")
+async def extract_license(image: UploadFile = File(...)):
+    path = await save_to_disk(image, TMP_DIR)
+    print("image saved to disk: ", path)
+
+    ## Getting license plate from the image
+    heic_image = open_heic_image(path)
+    heic_resized = resize_image(heic_image)
+    png_buffer = make_png_buffer(heic_resized)
+    license_plates_info = get_license_plate(png_buffer)
+
+    return license_plates_info
