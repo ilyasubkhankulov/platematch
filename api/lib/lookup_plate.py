@@ -37,23 +37,43 @@ class VinResponse(BaseModel):
 
 
 def lookup_plate(plate: str, state: str):
-    url = PLATETOVIN_BASE_URL + "/api/convert"
-    payload = {
-        "state": state,
-        "plate": plate,
-    }
-    headers = {
-        "Authorization": os.getenv("PLATETOVIN_API_KEY"),
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-    }
+    # url = PLATETOVIN_BASE_URL + "/api/convert"
+    # payload = {
+    #     "state": state,
+    #     "plate": plate,
+    # }
+    # headers = {
+    #     "Authorization": os.getenv("PLATETOVIN_API_KEY"),
+    #     "Content-Type": "application/json",
+    #     "Accept": "application/json",
+    # }
 
-    response = requests.request("POST", url, headers=headers, json=payload)
-    if response.status_code == 200:
-        return VinResponse(**json.loads(response.content.decode("utf-8")))
-    else:
-        return None
+    # response = requests.request("POST", url, headers=headers, json=payload)
+    # print(response)
+    # if response.status_code == 200:
+    #     return VinResponse(**json.loads(response.content.decode("utf-8")))
+    # else:
+    #     return None
+    return example_plate
 
 
 if __name__ == "__main__":
     print(lookup_plate("8uea243", "CA"))
+
+example_plate = VinResponse(
+    success=True,
+    vin=VinInfo(
+        vin="3TMMU4FN7FM086431",
+        year="2015",
+        make="Toyota",
+        model="Tacoma",
+        trim="Delux Grade",
+        name="2015 Toyota Tacoma",
+        engine="4.0L V6 DOHC",
+        style="PICKUP",
+        transmission="",
+        driveType="4WD/4-Wheel Drive/4x4",
+        fuel="Gasoline",
+        color=Color(name="Unknown", abbreviation="UNK"),
+    ),
+)

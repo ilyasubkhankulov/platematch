@@ -80,7 +80,7 @@ async def upload_image(
             code = code.split("-")[1].upper()
         else:
             return "not usa country"
-
+        print("looking up plate")
         vin_response = lookup_plate(plate, code)
 
         if vin_response is None:
@@ -94,8 +94,9 @@ async def upload_image(
         return "Car is not recognized"
 
     for vin_response in vin_responses:
-        is_match = match_car(vin_response, car_recognition)
-        return is_match
+        car_match = match_car(vin_response, car_recognition)
+        json_data = jsonable_encoder(car_match)
+        return JSONResponse(content=json_data)
 
 
 # @app.post("/license-plate-ocr/")

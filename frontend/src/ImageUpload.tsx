@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { Button, Flex, Spacer } from '@chakra-ui/react';
 import axios from 'axios';
 
-const url = 'http://localhost:8000/license-plate-ocr/';
+const url = 'http://localhost:8000/upload/';
 
 const ImageUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
-  const [licensePlate, setLicensePlate] = useState("");
+//   const [licensePlate, setLicensePlate] = useState("");
 
   const handleFileSelect = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -20,7 +20,7 @@ const ImageUpload = () => {
 
     const formData = new FormData();
     formData.append('image', selectedFile);
-    formData.append('metadata', "test")
+    // formData.append('metadata', "test")
 
     try {
       const response = await axios.post(url, formData, {
@@ -29,21 +29,21 @@ const ImageUpload = () => {
         }
       });
       // Handle response here
-        setLicensePlate(response.data);
+        // setLicensePlate(response.data);
       console.log(response.data);
     } catch (error) {
       // Handle error here
       console.error(error);
       alert('Error uploading image!');
     }
-  };
+  }; 
 
   return (
     <Flex p={4}>
       <input type="file" accept="*" onChange={handleFileSelect} />
-      <Button onClick={handleUpload}>Extract License Plate #</Button>
+      <Button onClick={handleUpload}>Assess Car Match</Button>
       <Spacer p={4} />
-      {licensePlate ? <p>{licensePlate.toUpperCase()}</p> : null}
+      {/* {licensePlate ? <p>{licensePlate.toUpperCase()}</p> : null} */}
     </Flex>
   );
 };

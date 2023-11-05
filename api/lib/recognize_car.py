@@ -64,6 +64,7 @@ headers = {
 
 
 def recognize_car(image_bytes: BytesIO) -> Union[CarRecognition, None]:
+    image_bytes.seek(0)
     files = {"imageFile": ("image.png", image_bytes)}
     response = requests.post(
         "https://carnet.ai/recognize-file", headers=headers, files=files

@@ -68,9 +68,9 @@ class Result(BaseModel):
     score: float
     candidates: List[Candidate]
     dscore: float
-    model_make: Union[List[ModelMake], None]
-    color: Union[List[Color], None]
-    orientation: Union[List[Orientation], None]
+    # model_make: Union[List[ModelMake], None]
+    # color: Union[List[Color], None]
+    # orientation: Union[List[Orientation], None]
 
 
 class LicensePlateData(BaseModel):
@@ -89,7 +89,6 @@ class LicensePlateResponse(BaseModel):
 
 def get_license_plate(image: BytesIO) -> LicensePlateResponse:
     regions = ["mx", "us-ca"]  # Change to your country
-
     response = requests.post(
         "https://api.platerecognizer.com/v1/plate-reader/",
         data=dict(regions=regions),  # Optional
