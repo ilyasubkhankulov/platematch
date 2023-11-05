@@ -3,7 +3,8 @@ import json
 import requests
 
 # Prepare metadata
-metadata = json.dumps({'lat': '123', 'long': '456'}) # convert dict to str
+metadata = json.dumps({'lat': '123', 'long': '456'})
+# convert dict to str
 
 # Prepare headers 
 headers = {'Content-Type': 'application/x-www-form-urlencoded'}
@@ -20,7 +21,7 @@ image_file = open(file_path, 'rb')
 response = requests.post(
     'http://localhost:8000/upload/',
     files={'image': image_file},
-    data={'metadata': metadata}
+    # data={'metadata': metadata}
 )
 
 # Close the file
