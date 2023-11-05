@@ -19,9 +19,10 @@ class ImageMetadata(BaseModel):
 
 
 def get_records() -> list[(str, str, CarMatch)]:
-    response = supabase.table("VehicleComparison").select("*").execute()
-    print(response)
+    response = supabase.table("VehicleComparison").select(
+        "*").execute()    # print(response)
     responseMatches: list[(str, str, float, float, CarMatch)] = []
+
     for resp in response.data:
         print(resp)
         carMatchResult: CarMatch = CarMatch(

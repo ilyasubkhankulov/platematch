@@ -4,7 +4,7 @@ import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility
 import "leaflet-defaulticon-compatibility";
 
 const StreetMap = ({ data }) => {
-  // const zoom = 13;
+  const zoom = 12;
 
   // [{"id":22,"latitude":37.806915284112684,"longitude":-122.43191185424762,"car_match":{"overall_result":"MISMATCH","make_result":{"match_result":"MISMATCH","field_name":"MAKE","plate_value":"Infiniti","car_value":"Hyundai"},"model_result":{"match_result":"MISMATCH","field_name":"MODEL","plate_value":"JX35","car_value":"Santa Fe"},"year_result":{"match_result":"MATCH","field_name":"YEAR","plate_value":"2013","car_value":"2012-2016"}}}]
 
@@ -16,7 +16,7 @@ const StreetMap = ({ data }) => {
   //   </MapContainer>
   // );
   return (
-    <MapContainer center={position} zoom={13} scrollWheelZoom={false}>
+    <MapContainer center={position} zoom={zoom} scrollWheelZoom={false}>
       <TileLayer
         attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
