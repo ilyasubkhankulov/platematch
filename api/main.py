@@ -57,8 +57,8 @@ class ImageMetadata(BaseModel):
 
 @app.post("/upload/")
 async def upload_image(
-    # lat: Annotated[float, Form()],
-    # long: Annotated[float, Form()],
+    lat: Annotated[float, Form()],
+    long: Annotated[float, Form()],
     image: UploadFile = File(...),
 ):
     # print(lat)
@@ -101,7 +101,7 @@ async def upload_image(
         car_match = match_car(vin_response, car_recognition)
         json_data = jsonable_encoder(car_match)
         name = save_image(path)
-        save_record(car_match, name, None)#ImageMetadata(lat=lat, long=long))
+        save_record(car_match, name, ImageMetadata(lat=lat, long=long))
         return JSONResponse(content=json_data)
 
 
