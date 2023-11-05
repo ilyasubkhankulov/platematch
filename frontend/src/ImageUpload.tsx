@@ -44,6 +44,7 @@ const ImageUpload = () => {
 
   const handleFileSelect = (event) => {
     setSelectedFile(event.target.files[0]);
+    setMatchResponse(null)
   };
 
   const handleUpload = async () => {
@@ -86,8 +87,6 @@ const ImageUpload = () => {
         {selectedFile ? 
             <Image src={URL.createObjectURL(selectedFile)} alt="Image Preview" boxSize="300px" />
         : null}
-        </Flex>
-        <Flex p={4}>
         {matchResponse ? 
             <TableContainer>
                 <Table variant='simple'>
