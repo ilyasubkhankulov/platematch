@@ -12,6 +12,8 @@ from lib.lookup_plate import lookup_plate
 from constants import TMP_DIR
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.encoders import jsonable_encoder
+from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
 
@@ -99,5 +101,31 @@ async def extract_license(image: UploadFile = File(...)):
     heic_resized = resize_image(heic_image)
     png_buffer = make_png_buffer(heic_resized)
     license_plates_info = get_license_plate(png_buffer)
+    print(license_plates_info)
+    json_data = jsonable_encoder(license_plates_info.data.results[0].plate)
+    
+    return JSONResponse(content=json_data)
 
-    return license_plates_info
+@app.post("/car-recognize/")
+async def recognize_car_api(image: UploadFile = File(...)):
+    path = await save_to_disk(image, TMP_DIR)
+    print("image saved to disk: ", path)
+
+    ## Getting license plate from the image
+    heic_image = open_heic_image(path)
+    heic_resized = resize_image(heic_image)
+    png_buffer = make_png_buffer(heic_resized)
+    car_recognition = recognize_car(png_buffer)
+    print(car_recognition)
+    json_data = jsonable_encoder(car_recognition)
+    
+    return JSONResponse(content=json_data)
+
+@app.post("/lookup-plate/")
+async def lookup_plate(plate: str = Form(...), state_code: str = Form(...)):
+    print(plate, state_code)
+    vin_response = lookup_plate(plate, state_code)
+    print(vin_response)
+    json_data = jsonable_encoder(vin_response)
+    
+    return JSONResponse(content=json_data)

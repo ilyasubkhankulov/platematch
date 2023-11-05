@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Button } from '@chakra-ui/react';
+import { Button, Flex, Spacer } from '@chakra-ui/react';
 import axios from 'axios';
 
 const url = 'http://localhost:8000/license-plate-ocr/';
 
 const ImageUpload = () => {
   const [selectedFile, setSelectedFile] = useState(null);
+  const [licensePlate, setLicensePlate] = useState("");
 
   const handleFileSelect = (event) => {
     setSelectedFile(event.target.files[0]);
@@ -28,8 +29,8 @@ const ImageUpload = () => {
         }
       });
       // Handle response here
+        setLicensePlate(response.data);
       console.log(response.data);
-      alert('Image uploaded successfully!');
     } catch (error) {
       // Handle error here
       console.error(error);
@@ -38,10 +39,12 @@ const ImageUpload = () => {
   };
 
   return (
-    <div>
+    <Flex p={4}>
       <input type="file" accept="*" onChange={handleFileSelect} />
-      <Button onClick={handleUpload}>Upload Image</Button>
-    </div>
+      <Button onClick={handleUpload}>Extract License Plate #</Button>
+      <Spacer p={4} />
+      {licensePlate ? <p>{licensePlate.toUpperCase()}</p> : null}
+    </Flex>
   );
 };
 
