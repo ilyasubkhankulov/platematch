@@ -13,6 +13,13 @@ class MatchResult(Enum):
     INVALID_PLATE = 3
     INDETERMINATE = 4
 
+    @classmethod
+    def from_string(cls, s):
+        try:
+            return cls[s]
+        except KeyError:
+            raise ValueError(f"Unknown enum value: {s}")
+
 
 class ComparisonValue(Enum):
     MAKE = 1

@@ -1,7 +1,8 @@
 import os
+import uuid
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from lib.match_car import CarMatch, ComparisonResult
+from lib.match_car import CarMatch, ComparisonResult, MatchResult, ComparisonValue
 from pydantic import BaseModel
 
 
@@ -15,32 +16,63 @@ class ImageMetadata(BaseModel):
     lat: str
     long: str
 
-def get_records() -> list[CarMatch]:
+def get_records() -> list[(str, str, CarMatch)]:
     response = supabase.table('VehicleComparison').select("*").execute()
-    responseMatches: list[CarMatch] = []
+    responseMatches: list[(str, str, CarMatch)] = []
     for resp in response.data:
         carMatchResult: CarMatch = CarMatch(
-            overall_result=resp['overall_match_result'],
+            overall_result=MatchResult.from_string(resp['overall_match_result']),
             make_result=ComparisonResult(
-                match_result=response['make_match_result'],
-                make_plate_value=response['make_plate_value'],
-                make_car_value=response['make_car_value']
+                match_result=MatchResult.from_string(resp['make_match_result']),
+                field_name=ComparisonValue.MAKE,
+                plate_value=resp['make_plate_value'],
+                car_value=resp['make_car_value']
             ),
             model_result=ComparisonResult(
-                match_result=response['model_match_result'],
-                model_plate_value=response['model_plate_value'],
-                model_car_value=response['model_car_value']
+                match_result=MatchResult.from_string(resp['model_match_result']),
+                field_name=ComparisonValue.MODEL,
+                plate_value=resp['model_plate_value'],
+                car_value=resp['model_car_value']
             ),
             year_result=ComparisonResult(
-                match_result=response['year_match_result'],
-                year_plate_value=response['year_plate_value'],
-                year_car_value=response['year_car_value']
+                match_result=MatchResult.from_string(resp['year_match_result']),
+                field_name=ComparisonValue.YEAR,
+                plate_value=resp['year_plate_value'],
+                car_value=resp['year_car_value']
             ),
         )
-        responseMatches.append(carMatchResult)
+        responseMatches.append((resp["id"], resp["object_name"], carMatchResult))
     return responseMatches
 
-def save_record(record: CarMatch, location: ImageMetadata = None):
+def get_record(id: int) -> (str, str, CarMatch):
+    response = supabase.table('VehicleComparison').select("*").eq('id', id).execute()
+    if len(response.data) == 0:
+        return None, None, "No record found"
+    resp = response.data[0]
+    carMatchResult: CarMatch = CarMatch(
+        overall_result=MatchResult.from_string(resp['overall_match_result']),
+        make_result=ComparisonResult(
+            match_result=MatchResult.from_string(resp['make_match_result']),
+            field_name=ComparisonValue.MAKE,
+            plate_value=resp['make_plate_value'],
+            car_value=resp['make_car_value']
+        ),
+        model_result=ComparisonResult(
+            match_result=MatchResult.from_string(resp['model_match_result']),
+            field_name=ComparisonValue.MODEL,
+            plate_value=resp['model_plate_value'],
+            car_value=resp['model_car_value']
+        ),
+        year_result=ComparisonResult(
+            match_result=MatchResult.from_string(resp['year_match_result']),
+            field_name=ComparisonValue.YEAR,
+            plate_value=resp['year_plate_value'],
+            car_value=resp['year_car_value']
+        ),
+    )
+    return resp["id"], resp["object_name"], carMatchResult
+
+def save_record(record: CarMatch, object_name: str, location: ImageMetadata = None):
     print
     data, count = supabase.table('VehicleComparison').insert({
         'overall_match_result': record.overall_result.name,
@@ -55,5 +87,19 @@ def save_record(record: CarMatch, location: ImageMetadata = None):
         'year_car_value': record.year_result.car_value,
         'latitude': location.lat if location else None,
         'longitude': location.long if location else None,
+        'object_name': object_name if object_name else None
         }).execute()
     return data, count
+
+def save_image(image_path) -> str:
+    # generate file name
+    name = str(uuid.uuid4())
+    with open(image_path, 'rb') as image:
+        supabase.storage.from_("car-photos").upload(file=image, path=f"{name}.png", file_options={"content-type":"image/png"})
+    return name
+
+def load_image(name: str) -> str:
+    # generate file name
+    res = supabase.storage.from_("car-photos").download(path=f"{name}.png")
+    print(type(res))
+    return res

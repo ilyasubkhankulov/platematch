@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Flex } from '@chakra-ui/react'
-import ImageUpload from './ImageUpload'
+// import ImageUpload from './ImageUpload'
+import SingleIncidentView from './SingleIncidentView'
 import './App.css'
 
 
@@ -12,7 +13,7 @@ function App() {
         <h1>Platematch</h1>
       </Flex>
       <Flex p={4}>
-        <ImageUpload />
+        <SingleIncidentView />
       </Flex>
     </>
   )

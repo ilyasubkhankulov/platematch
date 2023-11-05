@@ -14,10 +14,10 @@ from lib.image_preprocessing import make_png_buffer, open_heic_image, resize_ima
 from lib.license_plate_recognition import get_license_plate
 from lib.lookup_plate import VinResponse, lookup_plate
 from lib.recognize_car import recognize_car
-from lib.database import save_record
+from lib.database import save_record, save_image, load_image, get_record
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse
+from fastapi.responses import JSONResponse, Response
 
 from typing import Annotated
 from fastapi import Form
@@ -56,12 +56,12 @@ class ImageMetadata(BaseModel):
 
 @app.post("/upload/")
 async def upload_image(
-    lat: Annotated[float, Form()],
-    long: Annotated[float, Form()],
+    # lat: Annotated[float, Form()],
+    # long: Annotated[float, Form()],
     image: UploadFile = File(...),
 ):
-    print(lat)
-    print(long)
+    # print(lat)
+    # print(long)
     path = await save_to_disk(image, TMP_DIR)
     print("image saved to disk: ", path)
 
@@ -99,8 +99,16 @@ async def upload_image(
     for vin_response in vin_responses:
         car_match = match_car(vin_response, car_recognition)
         json_data = jsonable_encoder(car_match)
-        save_record(car_match, ImageMetadata(lat=lat, long=long))
+        name = save_image(path)
+        save_record(car_match, name, None)#ImageMetadata(lat=lat, long=long))
         return JSONResponse(content=json_data)
+
+
+@app.post("/incident-report/")
+async def incident_report(id: str = Form(...)):
+    _, uuid, _ = get_record(int(id))
+    image_bytes = load_image(uuid)
+    return Response(content=image_bytes, media_type="image/png")
 
 
 # @app.post("/license-plate-ocr/")

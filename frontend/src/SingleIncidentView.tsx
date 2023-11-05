@@ -37,55 +37,48 @@ function getMatchResultColor(value: number): string {
     }
 }
 
-const ImageUpload = () => {
-  const [selectedFile, setSelectedFile] = useState(null);
+const SingleIncidentView = () => {
   const [matchResponse, setMatchResponse] = useState<CarMatch|null>(null);
+  const [carImageUrl, setCarImageUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  const handleFileSelect = (event) => {
-    setSelectedFile(event.target.files[0]);
-    setMatchResponse(null)
-  };
-
-  const handleUpload = async () => {
-    if (!selectedFile) {
-      alert('Please select a file first!');
-      return;
-    }
+  const handleLoad = async () => {
 
     const formData = new FormData();
-    formData.append('image', selectedFile);
+    // formData.append('image', selectedFile);
+    formData.append("id", "14")
     // formData.append('metadata', "test")
     setLoading(true);
     try {
         const response = await axios.post(url, formData, {
             headers: {
             'Content-Type': 'multipart/form-data'
-            }
+            },
+            responseType: 'blob'
         });
         // Handle response here
         setLoading(false);
-        setMatchResponse(response.data);
+        // setMatchResponse(response.data);
         console.log(response.data);
+        const carUrl = URL.createObjectURL(response.data)
+        setCarImageUrl(carUrl);
     } catch (error) {
         // Handle error here
         console.error(error);
         setLoading(false);
-        alert('Error uploading image!');
     }
   }; 
 
   return (
     <VStack>
         <Flex p={4}>
-        <input type="file" accept="*" onChange={handleFileSelect} />
         <Spacer p={8} />
-        <Button onClick={handleUpload} isLoading={loading}>Assess Car Match</Button>
+        <Button onClick={handleLoad} isLoading={loading}>Load Incident 14</Button>
         <Spacer p={4} />
         </Flex>
         <Flex>
-        {selectedFile ? 
-            <Image src={URL.createObjectURL(selectedFile)} alt="Image Preview" boxSize="300px" />
+        {carImageUrl ? 
+            <Image src={carImageUrl} alt="Image Preview" boxSize="300px" />
         : null}
         {matchResponse ? 
             <TableContainer>
@@ -126,4 +119,4 @@ const ImageUpload = () => {
   );
 };
 
-export default ImageUpload;
+export default SingleIncidentView;
