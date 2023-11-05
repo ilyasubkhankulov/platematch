@@ -111,7 +111,7 @@ async def extract_license(image: UploadFile = File(...)):
     
     return JSONResponse(content=json_data)
 
-@app.post("/car-recognize/")
+@app.post("/recognize-car/")
 async def recognize_car_api(image: UploadFile = File(...)):
     path = await save_to_disk(image, TMP_DIR)
     print("image saved to disk: ", path)
