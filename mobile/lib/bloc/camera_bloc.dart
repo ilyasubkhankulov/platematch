@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:dio/dio.dart';
@@ -105,16 +107,54 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
                 filename: "test.heic"),
           });
 
+          Response<dynamic> response;
+
           try {
-            final response = await dio.post(
+            response = await dio.post(
                 'https://857f-204-11-230-50.ngrok-free.app/upload/',
                 data: formData);
-
-            emit(CameraResult(
-                true, response.data.toString(), ptState.controller));
           } catch (e) {
-            emit(CameraResult(false, "WE FAILED", ptState.controller));
+            emit(CameraResult(false, e.toString(), null, ptState.controller));
+            return;
           }
+
+          Map<String, dynamic> responseJson = response.data;
+
+          print(responseJson);
+
+          if (responseJson.containsKey('error')) {
+            emit(CameraResult(
+                true, responseJson["error"], null, ptState.controller));
+            return;
+          }
+
+          bool isMatch(int overallResult) {
+            return overallResult == 1;
+          }
+
+          var overallResult = responseJson['overall_result'];
+          var makeResult = responseJson['make_result'];
+          var modelResult = responseJson['model_result'];
+          var yearResult = responseJson['year_result'];
+
+          var matches = Matches(
+            isMatch(overallResult),
+            Match(isMatch(makeResult["match_result"]),
+                makeResult["plate_value"], makeResult["car_value"]),
+            Match(isMatch(modelResult["match_result"]),
+                modelResult["plate_value"], modelResult["car_value"]),
+            Match(isMatch(yearResult["match_result"]),
+                yearResult["plate_value"], yearResult["car_value"]),
+          );
+
+          String finalText;
+          if (matches.overallMatched) {
+            finalText = "Not suspicious";
+          } else {
+            finalText = "Suspicious";
+          }
+
+          emit(CameraResult(true, finalText, matches, ptState.controller));
         }
       },
     );

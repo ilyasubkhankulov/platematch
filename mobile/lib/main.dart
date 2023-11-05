@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
@@ -160,13 +161,17 @@ class _CameraAppState extends State<CameraApp> {
                   case CameraResult():
                     return Column(
                       mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Text(state.result),
-                        TextButton(
+                        CameraResultWidget(state),
+                        ElevatedButton(
+                            style: ButtonStyle(
+                                backgroundColor:
+                                    MaterialStateProperty.all(Colors.purple)),
                             onPressed: () {
                               context.read<CameraBloc>().add(GoBackToCamera());
                             },
-                            child: Text("try again"))
+                            child: const Text("try again"))
                       ],
                     );
                 }
@@ -174,6 +179,80 @@ class _CameraAppState extends State<CameraApp> {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class CameraResultWidget extends StatefulWidget {
+  final CameraResult cameraResult;
+
+  const CameraResultWidget(this.cameraResult, {super.key});
+
+  @override
+  State<CameraResultWidget> createState() => _CameraResultWidgetState();
+}
+
+class _CameraResultWidgetState extends State<CameraResultWidget> {
+  late final int reportNumber;
+  late final DateTime dateTime;
+
+  @override
+  void initState() {
+    reportNumber = Random().nextInt(1000000);
+    dateTime = DateTime.now();
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.all(8.0),
+      child: AspectRatio(
+        aspectRatio: 1,
+        child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: Colors.purple,
+                width: 3,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            alignment: Alignment.center,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Spacer(),
+                Text(
+                  "Thank you\nfor your submission!",
+                  textAlign: TextAlign.center,
+                  style: TextStyle(fontSize: 24),
+                ),
+                Spacer(),
+                Text(
+                  "Report: $reportNumber",
+                  style: TextStyle(fontSize: 12),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                Text(
+                  "Your report was submitted on: ${dateTime.day}/${dateTime.month}/${dateTime.year} at ${dateTime.hour}:${dateTime.minute}",
+                  style: TextStyle(fontSize: 12, color: Colors.grey[800]),
+                ),
+                Spacer(),
+                Text(
+                  "Check result:",
+                  style: TextStyle(fontSize: 16),
+                ),
+                Text(
+                  widget.cameraResult.testResult,
+                  style: TextStyle(fontSize: 32),
+                ),
+                Spacer()
+              ],
+            )),
       ),
     );
   }

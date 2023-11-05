@@ -21,10 +21,29 @@ final class PictureTaken extends CameraState {
   PictureTaken(this.picture, this.position, this.controller, this.isLoading);
 }
 
+class Match {
+  final bool matched;
+  final String plateValue;
+  final String carValue;
+
+  Match(this.matched, this.plateValue, this.carValue);
+}
+
+class Matches {
+  final bool overallMatched;
+
+  final Match makeMatch;
+  final Match modelMatch;
+  final Match yearMatch;
+
+  Matches(this.overallMatched, this.makeMatch, this.modelMatch, this.yearMatch);
+}
+
 final class CameraResult extends CameraState {
   final bool success;
-  final String result;
+  final String testResult;
+  final Matches? match;
   final CameraController controller;
 
-  CameraResult(this.success, this.result, this.controller);
+  CameraResult(this.success, this.testResult, this.match, this.controller);
 }
