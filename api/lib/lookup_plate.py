@@ -11,6 +11,11 @@ PLATETOVIN_BASE_URL = "https://platetovin.com"
 from dataclasses import dataclass
 
 
+class Color(BaseModel):
+    name: str
+    abbreviation: str
+
+
 class VinInfo(BaseModel):
     vin: str
     year: str
@@ -23,7 +28,7 @@ class VinInfo(BaseModel):
     transmission: str
     driveType: str
     fuel: str
-    color: dict
+    color: Color
 
 
 class VinResponse(BaseModel):

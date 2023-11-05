@@ -1,4 +1,5 @@
-from io import BytesIO
+from io import BufferedReader, BytesIO
+from typing import Union
 import requests
 
 from pydantic import BaseModel
@@ -62,10 +63,13 @@ headers = {
 # response = requests.post('https://carnet.ai/recognize-file', headers=headers, files=files)
 
 
-def recognize_car(image_bytes: BytesIO):
+def recognize_car(image_bytes: BytesIO) -> Union[CarRecognition, None]:
     files = {"imageFile": ("image.png", image_bytes)}
     response = requests.post(
         "https://carnet.ai/recognize-file", headers=headers, files=files
     )
+
+    if response.status_code != 200:
+        return None
 
     return CarRecognition(**response.json())
