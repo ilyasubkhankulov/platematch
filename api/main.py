@@ -14,6 +14,7 @@ from lib.image_preprocessing import make_png_buffer, open_heic_image, resize_ima
 from lib.license_plate_recognition import get_license_plate
 from lib.lookup_plate import VinResponse, lookup_plate
 from lib.recognize_car import recognize_car
+from lib.database import save_record
 from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
@@ -96,6 +97,7 @@ async def upload_image(
     for vin_response in vin_responses:
         car_match = match_car(vin_response, car_recognition)
         json_data = jsonable_encoder(car_match)
+        save_record(car_match, metadata_dict)
         return JSONResponse(content=json_data)
 
 
