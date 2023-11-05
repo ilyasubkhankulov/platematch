@@ -82,6 +82,11 @@ const ImageUpload = () => {
         <Button onClick={handleUpload} isLoading={loading}>Assess Car Match</Button>
         <Spacer p={4} />
         </Flex>
+        <Flex>
+        {selectedFile ? 
+            <Image src={URL.createObjectURL(selectedFile)} alt="Image Preview" boxSize="300px" />
+        : null}
+        </Flex>
         <Flex p={4}>
         {matchResponse ? 
             <TableContainer>
