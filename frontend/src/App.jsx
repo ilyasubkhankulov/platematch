@@ -2,10 +2,8 @@ import React, { useState } from "react";
 import { Flex, } from "@chakra-ui/react";
 import { Outlet, Link } from "react-router-dom";
 // import ImageUpload from "./ImageUpload";
-import StreetMap from "./components/StreetMap";
 import "./App.css";
 // import MapExample from "./components/MapExample";
-import SingleIncidentView from "./SingleIncidentView";
 
 function App() {
   return (
@@ -18,9 +16,6 @@ function App() {
       <Flex p={4}>
         <Outlet />
       </Flex>
-      {/* <ImageUpload></ImageUpload> */}
-
-      <StreetMap />
     </>
   );
 }
