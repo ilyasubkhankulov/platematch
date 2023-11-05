@@ -171,7 +171,7 @@ class _CameraAppState extends State<CameraApp> {
                             onPressed: () {
                               context.read<CameraBloc>().add(GoBackToCamera());
                             },
-                            child: const Text("try again"))
+                            child: const Text("submit another"))
                       ],
                     );
                 }
