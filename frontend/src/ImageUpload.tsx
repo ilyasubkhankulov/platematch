@@ -117,12 +117,6 @@ const ImageUpload = () => {
                         <Td>{matchResponse.year_result.plate_value}</Td>
                         <Td bgColor={getMatchResultColor(matchResponse.year_result.match_result)}>{getMatchResultName(matchResponse.year_result.match_result)}</Td>
                     </Tr>
-                    <Tr>
-                        <Td>Color</Td>
-                        <Td>{matchResponse.color_result.car_value}</Td>
-                        <Td>{matchResponse.color_result.plate_value}</Td>
-                        <Td bgColor={getMatchResultColor(matchResponse.color_result.match_result)}>{getMatchResultName(matchResponse.color_result.match_result)}</Td>
-                    </Tr>
                     </Tbody>
                 </Table>
             </TableContainer>
