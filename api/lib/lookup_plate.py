@@ -69,7 +69,9 @@ def get_plate_info(vin: str):
 
 
 def lookup_plate(plate: str, state: str):
-    vin_response = get_vin(plate, state)
+    vin_response:dict = get_vin(plate, state)
+    if (vin_response.get('error') != None):
+        return None
     vin = vin_response["specifications"]["vin"]
     print('vin: ', vin)
     plate_info = get_plate_info(vin)

@@ -88,13 +88,17 @@ async def upload_image(
             code = code.split("-")[1].upper()
         else:
             return Error(error="Not USA country plate")
+        print(f"PLATE: {plate} CODE: {code}")
         print("looking up plate")
+
         vin_response = lookup_plate(plate, code)
 
         if vin_response is None:
-            return Error(error="Plate is invalid")
+            return Error(error="Plate not found in VIN database")
 
         vin_responses.append(vin_response)
+        
+        break
 
     car_recognition = recognize_car(png_buffer)
 
