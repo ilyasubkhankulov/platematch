@@ -9,7 +9,9 @@ function App() {
   return (
     <>
       <Flex p={4}>
-        <Heading as={Link} to="/">Platematch</Heading>
+        <Heading as={Link} to="/">
+          Platematch
+        </Heading>
       </Flex>
       <Flex p={4}>
         <Outlet />
