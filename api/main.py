@@ -1,8 +1,6 @@
 
-<<<<<<< HEAD
+
 import base64
-=======
->>>>>>> c55363e (remove)
 import json
 import os
 from io import BufferedReader
