@@ -11,6 +11,7 @@ import {
     Td,
     TableContainer,
     Stack,
+    Heading,
     Image, } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { CarMatch, MatchResult } from './types';
@@ -79,6 +80,7 @@ const SingleIncidentView = () => {
 
   return (
     <Stack>
+        <Heading size='lg'>Submission Details</Heading>
         <Spacer p={4} />
         <Flex>
         {loading ? 
@@ -88,38 +90,40 @@ const SingleIncidentView = () => {
             <Image borderRadius='lg' src={carImageSrc} alt="Image Preview" boxSize="300px" />
         : null}
         {matchResponse ? 
-            <TableContainer>
-                <Table variant='simple'>
-                    <Thead>
-                    <Tr>
-                        <Th>Attribute</Th>
-                        <Th>Car Value</Th>
-                        <Th>Plate Value</Th>
-                        <Th>Status</Th>
-                    </Tr>
-                    </Thead>
-                    <Tbody>
-                    <Tr>
-                        <Td>Make</Td>
-                        <Td>{matchResponse.make_result.car_value}</Td>
-                        <Td>{matchResponse.make_result.plate_value}</Td>
-                        <Td bgColor={getMatchResultColor(matchResponse.make_result.match_result)}>{getMatchResultName(matchResponse.make_result.match_result)}</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Model</Td>
-                        <Td>{matchResponse.model_result.car_value}</Td>
-                        <Td>{matchResponse.model_result.plate_value}</Td>
-                        <Td bgColor={getMatchResultColor(matchResponse.model_result.match_result)}>{getMatchResultName(matchResponse.model_result.match_result)}</Td>
-                    </Tr>
-                    <Tr>
-                        <Td>Year</Td>
-                        <Td>{matchResponse.year_result.car_value}</Td>
-                        <Td>{matchResponse.year_result.plate_value}</Td>
-                        <Td bgColor={getMatchResultColor(matchResponse.year_result.match_result)}>{getMatchResultName(matchResponse.year_result.match_result)}</Td>
-                    </Tr>
-                    </Tbody>
-                </Table>
-            </TableContainer>
+            <Flex>
+                <TableContainer verticalAlign={"middle"}>
+                    <Table variant='simple'>
+                        <Thead>
+                        <Tr>
+                            <Th>Attribute</Th>
+                            <Th>Car Value</Th>
+                            <Th>Plate Value</Th>
+                            <Th>Status</Th>
+                        </Tr>
+                        </Thead>
+                        <Tbody>
+                        <Tr>
+                            <Td>Make</Td>
+                            <Td>{matchResponse.make_result.car_value}</Td>
+                            <Td>{matchResponse.make_result.plate_value}</Td>
+                            <Td bgColor={getMatchResultColor(matchResponse.make_result.match_result)}>{getMatchResultName(matchResponse.make_result.match_result)}</Td>
+                        </Tr>
+                        <Tr>
+                            <Td>Model</Td>
+                            <Td>{matchResponse.model_result.car_value}</Td>
+                            <Td>{matchResponse.model_result.plate_value}</Td>
+                            <Td bgColor={getMatchResultColor(matchResponse.model_result.match_result)}>{getMatchResultName(matchResponse.model_result.match_result)}</Td>
+                        </Tr>
+                        <Tr>
+                            <Td>Year</Td>
+                            <Td>{matchResponse.year_result.car_value}</Td>
+                            <Td>{matchResponse.year_result.plate_value}</Td>
+                            <Td bgColor={getMatchResultColor(matchResponse.year_result.match_result)}>{getMatchResultName(matchResponse.year_result.match_result)}</Td>
+                        </Tr>
+                        </Tbody>
+                    </Table>
+                </TableContainer>
+            </Flex>
         : null}
         </Flex>
     </Stack>

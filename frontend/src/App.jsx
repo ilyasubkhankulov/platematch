@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Flex, Heading } from "@chakra-ui/react";
+import { Flex, Heading, Image } from "@chakra-ui/react";
 import { Outlet, Link } from "react-router-dom";
 // import ImageUpload from "./ImageUpload";
 import "./App.css";
@@ -10,7 +10,7 @@ function App() {
     <>
       <Flex p={4}>
         <Heading as={Link} to="/">
-          Platematch
+          <Image src="/public/logo.svg" />
         </Heading>
       </Flex>
       <Flex p={4}>
