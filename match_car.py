@@ -104,8 +104,8 @@ def split_years(years_range):
 # Example Responses
 # plate lookup response
 example_plate = { 
- 'success': True, 
- 'vin': {
+ 'vin': '3TMMU4FN7FM086431',
+ 'specifications': {
      'vin': '3TMMU4FN7FM086431', 
      'year': '2015', 
      'make': 'Toyota', 
