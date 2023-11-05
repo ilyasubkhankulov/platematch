@@ -4,6 +4,7 @@ import os
 from typing import Optional, Union
 
 import aiofiles
+from lib.database import ImageMetadata
 from lib.match_car import match_car
 
 # from lib.convert_image import heic_to_png_buffer
@@ -49,11 +50,6 @@ async def save_to_disk(image, tmp_dir):
         content = await image.read()  # async read
         await out_file.write(content)  # async write
     return path
-
-
-class ImageMetadata(BaseModel):
-    lat: Union[float, None]
-    long: Union[float, None]
 
 
 class Error(BaseModel):
@@ -105,7 +101,9 @@ async def upload_image(
     for vin_response in vin_responses:
         car_match = match_car(vin_response, car_recognition)
         name = save_image(path)
-        save_record(car_match, name, None)  # ImageMetadata(lat=lat, long=long))
+        save_record(
+            car_match, name, ImageMetadata(lat=str(lat), long=str(long))
+        )  # ImageMetadata(lat=lat, long=long))
         return car_match
 
     return Error(error="No car have matched")
