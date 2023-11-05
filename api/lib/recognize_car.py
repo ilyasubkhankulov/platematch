@@ -1,7 +1,7 @@
-from io import BufferedReader, BytesIO
+from io import BytesIO
 from typing import Union
-import requests
 
+import requests
 from pydantic import BaseModel
 
 
@@ -32,7 +32,7 @@ class Bbox(BaseModel):
 
 class CarRecognition(BaseModel):
     car: Car
-    color: Color
+    # color: Color
     angle: Angle
     bbox: Bbox
 
@@ -49,9 +49,7 @@ headers = {
     "Sec-Fetch-Dest": "empty",
     "Sec-Fetch-Mode": "cors",
     "Sec-Fetch-Site": "same-origin",
-    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
     "X-Requested-With": "XMLHttpRequest",
-    "sec-ch-ua": '"Google Chrome";v="119", "Chromium";v="119", "Not?A_Brand";v="24"',
     "sec-ch-ua-mobile": "?0",
     "sec-ch-ua-platform": "macOS",
 }
@@ -60,7 +58,8 @@ headers = {
 #     'imageFile': ('lexus.png', open('your_file_path.png', 'rb')),
 # }
 
-# response = requests.post('https://carnet.ai/recognize-file', headers=headers, files=files)
+# response = requests.post('https://carnet.ai/recognize-file', headers=headers,
+# files=files)
 
 
 def recognize_car(image_bytes: BytesIO) -> Union[CarRecognition, None]:
