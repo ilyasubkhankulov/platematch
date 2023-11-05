@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Flex } from "@chakra-ui/react";
 // import ImageUpload from "./ImageUpload";
-// import StreetMap from "./components/StreetMap";
+import StreetMap from "./components/StreetMap";
 import "./App.css";
-// import Map from "./components/Map";
+// import MapExample from "./components/MapExample";
 import SingleIncidentView from "./SingleIncidentView";
 
 function App() {
@@ -16,8 +16,8 @@ function App() {
         <SingleIncidentView />
       </Flex>
       {/* <ImageUpload></ImageUpload> */}
-      {/* <StreetMap /> */}
-      {/* <Map></Map> */}
+
+      <StreetMap />
     </>
   );
 }
