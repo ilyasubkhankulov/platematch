@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Flex, } from "@chakra-ui/react";
+import { Flex, Heading } from "@chakra-ui/react";
 import { Outlet, Link } from "react-router-dom";
 // import ImageUpload from "./ImageUpload";
 import "./App.css";
@@ -9,9 +9,7 @@ function App() {
   return (
     <>
       <Flex p={4}>
-        <h1>
-          <Link to="/">Platematch</Link>
-        </h1>
+        <Heading as={Link} to="/">Platematch</Heading>
       </Flex>
       <Flex p={4}>
         <Outlet />
