@@ -2,7 +2,10 @@ import React from "react";
 import rewind from "@turf/rewind";
 import buffer from "@turf/buffer";
 import difference from "@turf/difference";
-import { Map, TileLayer, GeoJSON } from "react-leaflet";
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet-defaulticon-compatibility/dist/leaflet-defaulticon-compatibility.css";
+import "leaflet-defaulticon-compatibility";
 
 const goodParcel = {
   type: "Feature",
@@ -53,7 +56,11 @@ class MapExample extends React.PureComponent {
   render() {
     const position = [this.state.lat, this.state.lng];
     return (
-      <Map center={position} zoom={this.state.zoom} style={{ height: "70em" }}>
+      <MapContainer
+        center={position}
+        zoom={this.state.zoom}
+        style={{ height: "70em" }}
+      >
         <TileLayer
           attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -74,7 +81,7 @@ class MapExample extends React.PureComponent {
           key="secondBuffer"
           data={secondBuffer}
         />
-      </Map>
+      </MapContainer>
     );
   }
 }
