@@ -10,7 +10,7 @@ function App() {
     <>
       <Flex p={4}>
         <Heading as={Link} to="/">
-          Platematch
+          PlateMatch
         </Heading>
       </Flex>
       <Flex p={4}>
