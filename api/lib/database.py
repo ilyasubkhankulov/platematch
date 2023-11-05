@@ -1,7 +1,7 @@
 import os
 from supabase import create_client, Client
 from dotenv import load_dotenv
-from lib.match_car import CarMatch
+from lib.match_car import CarMatch, ComparisonResult
 from pydantic import BaseModel
 
 
@@ -15,9 +15,30 @@ class ImageMetadata(BaseModel):
     lat: str
     long: str
 
-def get_records():
+def get_records() -> list[CarMatch]:
     response = supabase.table('VehicleComparison').select("*").execute()
-    return response
+    responseMatches: list[CarMatch] = []
+    for resp in response.data:
+        carMatchResult: CarMatch = CarMatch(
+            overall_result=resp['overall_match_result'],
+            make_result=ComparisonResult(
+                match_result=response['make_match_result'],
+                make_plate_value=response['make_plate_value'],
+                make_car_value=response['make_car_value']
+            ),
+            model_result=ComparisonResult(
+                match_result=response['model_match_result'],
+                model_plate_value=response['model_plate_value'],
+                model_car_value=response['model_car_value']
+            ),
+            year_result=ComparisonResult(
+                match_result=response['year_match_result'],
+                year_plate_value=response['year_plate_value'],
+                year_car_value=response['year_car_value']
+            ),
+        )
+        responseMatches.append(carMatchResult)
+    return responseMatches
 
 def save_record(record: CarMatch, location: ImageMetadata = None):
     print
