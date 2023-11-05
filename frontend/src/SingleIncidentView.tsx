@@ -16,8 +16,9 @@ import { useParams } from 'react-router-dom';
 import { CarMatch, MatchResult } from './types';
 import axios from 'axios';
 
-const url = 'http://localhost:8000/incident-report/';
+const API_HOST = 'http://localhost:8000';
 
+const url = `${API_HOST}/incident-report/`
 // Function to get the enum name as a string
 function getMatchResultName(value: number): string {
     return MatchResult[value] as string;
