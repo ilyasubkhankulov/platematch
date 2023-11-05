@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
-    Button, 
+    Spinner, 
     Flex, 
     Spacer, 
     Table,
@@ -12,6 +12,7 @@ import {
     TableContainer,
     VStack,
     Image, } from '@chakra-ui/react';
+import { useParams } from 'react-router-dom';
 import { CarMatch, MatchResult } from './types';
 import axios from 'axios';
 
@@ -41,11 +42,12 @@ const SingleIncidentView = () => {
   const [matchResponse, setMatchResponse] = useState<CarMatch|null>(null);
   const [carImageSrc, setCarImageSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const { id } = useParams();
 
   const handleLoad = async () => {
 
     const formData = new FormData();
-    formData.append("id", "14")
+    formData.append("id", id!)
     setLoading(true);
     try {
         const response = await axios.post(url, formData, {
@@ -68,14 +70,21 @@ const SingleIncidentView = () => {
     }
   }; 
 
+  useEffect(()=> {
+    if (id) {
+        handleLoad();
+    }
+  }, [id])
+
   return (
     <VStack>
         <Flex p={4}>
-        <Spacer p={8} />
-        <Button onClick={handleLoad} isLoading={loading}>Load Incident 14</Button>
         <Spacer p={4} />
         </Flex>
         <Flex>
+        {loading ? 
+            <Spinner size="xl" /> : null
+        }
         {carImageSrc ? 
             <Image src={carImageSrc} alt="Image Preview" boxSize="300px" />
         : null}
