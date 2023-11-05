@@ -1,5 +1,6 @@
 from io import BufferedReader
 import json
+import base64
 import os
 from typing import Optional, Union
 
@@ -106,9 +107,14 @@ async def upload_image(
 
 @app.post("/incident-report/")
 async def incident_report(id: str = Form(...)):
-    _, uuid, _ = get_record(int(id))
+    _, uuid, match_report = get_record(int(id))
     image_bytes = load_image(uuid)
-    return Response(content=image_bytes, media_type="image/png")
+    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
+    response_data = {
+        "image": image_base64,
+        "info": match_report,
+    }
+    return response_data
 
 
 # @app.post("/license-plate-ocr/")

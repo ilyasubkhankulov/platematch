@@ -39,29 +39,28 @@ function getMatchResultColor(value: number): string {
 
 const SingleIncidentView = () => {
   const [matchResponse, setMatchResponse] = useState<CarMatch|null>(null);
-  const [carImageUrl, setCarImageUrl] = useState<string | null>(null);
+  const [carImageSrc, setCarImageSrc] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleLoad = async () => {
 
     const formData = new FormData();
-    // formData.append('image', selectedFile);
     formData.append("id", "14")
-    // formData.append('metadata', "test")
     setLoading(true);
     try {
         const response = await axios.post(url, formData, {
             headers: {
             'Content-Type': 'multipart/form-data'
             },
-            responseType: 'blob'
         });
+        const imageData = response.data.image;
+        const matchData = response.data.info;
         // Handle response here
         setLoading(false);
         // setMatchResponse(response.data);
         console.log(response.data);
-        const carUrl = URL.createObjectURL(response.data)
-        setCarImageUrl(carUrl);
+        setCarImageSrc(`data:image/jpeg;base64,${imageData}`);
+        setMatchResponse(matchData);
     } catch (error) {
         // Handle error here
         console.error(error);
@@ -77,8 +76,8 @@ const SingleIncidentView = () => {
         <Spacer p={4} />
         </Flex>
         <Flex>
-        {carImageUrl ? 
-            <Image src={carImageUrl} alt="Image Preview" boxSize="300px" />
+        {carImageSrc ? 
+            <Image src={carImageSrc} alt="Image Preview" boxSize="300px" />
         : null}
         {matchResponse ? 
             <TableContainer>
