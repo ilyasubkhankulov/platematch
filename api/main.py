@@ -1,11 +1,9 @@
 from io import BufferedReader
 import json
-import base64
 import os
 from typing import Optional, Union
 
 import aiofiles
-from lib.database import ImageMetadata
 from lib.match_car import match_car
 
 # from lib.convert_image import heic_to_png_buffer
@@ -23,6 +21,8 @@ from fastapi.responses import JSONResponse, Response
 
 from typing import Annotated
 from fastapi import Form
+
+from lib.match_car import CarMatch
 
 
 app = FastAPI()
@@ -51,12 +51,21 @@ async def save_to_disk(image, tmp_dir):
     return path
 
 
+class ImageMetadata(BaseModel):
+    lat: Union[float, None]
+    long: Union[float, None]
+
+
+class Error(BaseModel):
+    error: str
+
+
 @app.post("/upload/")
 async def upload_image(
     lat: Annotated[float, Form()],
     long: Annotated[float, Form()],
     image: UploadFile = File(...),
-):
+) -> Union[CarMatch, Error]:
     # print(lat)
     # print(long)
     path = await save_to_disk(image, TMP_DIR)
@@ -69,7 +78,7 @@ async def upload_image(
     license_plates_info = get_license_plate(png_buffer)
 
     if license_plates_info.data is None:
-        return "Not found any"
+        return Error(error="Not found any")
 
     vin_responses: list[VinResponse] = []
     for result in license_plates_info.data.results:
@@ -79,38 +88,34 @@ async def upload_image(
         if code.split("-")[0] == "us":
             code = code.split("-")[1].upper()
         else:
-            return "not usa country"
+            return Error(error="Not USA country plate")
         print("looking up plate")
         vin_response = lookup_plate(plate, code)
 
         if vin_response is None:
-            return "Plate is invalid"
+            return Error(error="Plate is invalid")
 
         vin_responses.append(vin_response)
 
     car_recognition = recognize_car(png_buffer)
 
     if car_recognition is None:
-        return "Car is not recognized"
+        return Error(error="Car is not recognized")
 
     for vin_response in vin_responses:
         car_match = match_car(vin_response, car_recognition)
-        json_data = jsonable_encoder(car_match)
         name = save_image(path)
-        save_record(car_match, name, ImageMetadata(lat=str(lat), long=str(long)))
-        return JSONResponse(content=json_data)
+        save_record(car_match, name, None)  # ImageMetadata(lat=lat, long=long))
+        return car_match
+
+    return Error(error="No car have matched")
 
 
 @app.post("/incident-report/")
 async def incident_report(id: str = Form(...)):
-    _, uuid, match_report = get_record(int(id))
+    _, uuid, _ = get_record(int(id))
     image_bytes = load_image(uuid)
-    image_base64 = base64.b64encode(image_bytes).decode("utf-8")
-    response_data = {
-        "image": image_base64,
-        "info": match_report,
-    }
-    return response_data
+    return Response(content=image_bytes, media_type="image/png")
 
 
 # @app.post("/license-plate-ocr/")
