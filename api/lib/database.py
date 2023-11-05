@@ -1,10 +1,10 @@
 import os
 import uuid
-from supabase import create_client, Client
-from dotenv import load_dotenv
-from lib.match_car import CarMatch, ComparisonResult, MatchResult, ComparisonValue
-from pydantic import BaseModel
 
+from dotenv import load_dotenv
+from lib.match_car import CarMatch, ComparisonResult, ComparisonValue, MatchResult
+from pydantic import BaseModel
+from supabase import Client, create_client
 
 load_dotenv()
 
@@ -20,35 +20,45 @@ class ImageMetadata(BaseModel):
 
 def get_records() -> list[(str, str, CarMatch)]:
     response = supabase.table("VehicleComparison").select("*").execute()
-    responseMatches: list[(str, str, CarMatch)] = []
+    print(response)
+    responseMatches: list[(str, str, float, float, CarMatch)] = []
     for resp in response.data:
+        print(resp)
         carMatchResult: CarMatch = CarMatch(
-            overall_result=MatchResult.from_string(resp["overall_match_result"]),
+            overall_result=MatchResult.from_string(
+                resp["overall_match_result"]),
             make_result=ComparisonResult(
-                match_result=MatchResult.from_string(resp["make_match_result"]),
+                match_result=MatchResult.from_string(
+                    resp["make_match_result"]),
                 field_name=ComparisonValue.MAKE,
                 plate_value=resp["make_plate_value"],
                 car_value=resp["make_car_value"],
             ),
             model_result=ComparisonResult(
-                match_result=MatchResult.from_string(resp["model_match_result"]),
+                match_result=MatchResult.from_string(
+                    resp["model_match_result"]),
                 field_name=ComparisonValue.MODEL,
                 plate_value=resp["model_plate_value"],
                 car_value=resp["model_car_value"],
             ),
             year_result=ComparisonResult(
-                match_result=MatchResult.from_string(resp["year_match_result"]),
+                match_result=MatchResult.from_string(
+                    resp["year_match_result"]),
                 field_name=ComparisonValue.YEAR,
                 plate_value=resp["year_plate_value"],
                 car_value=resp["year_car_value"],
             ),
         )
-        responseMatches.append((resp["id"], resp["object_name"], carMatchResult))
-    return responseMatches
+        responseMatches.append(
+            (resp["id"], resp["object_name"], resp['latitude'],
+             resp['longitude'], carMatchResult))
+    records = [obj_to_dict(record) for record in responseMatches]
+    return records
 
 
 def get_record(id: int) -> (str, str, CarMatch):
-    response = supabase.table("VehicleComparison").select("*").eq("id", id).execute()
+    response = supabase.table("VehicleComparison").select(
+        "*").eq("id", id).execute()
     if len(response.data) == 0:
         return None, None, "No record found"
     resp = response.data[0]
@@ -116,3 +126,31 @@ def load_image(name: str) -> str:
     res = supabase.storage.from_("car-photos").download(path=f"{name}.png")
     print(type(res))
     return res
+
+
+def obj_to_dict(obj):
+    if isinstance(obj, tuple):
+        print(obj)
+        # Get the first element in tuple as id
+        id, _,  latitude, longitude, car_match = obj
+        # id _, object_name, latitude, longitude, car_match = obj
+        return {"id": id, "latitude": latitude, "longitude": longitude,
+                "car_match": obj_to_dict(car_match)}
+    elif isinstance(obj, CarMatch):
+        return {
+            "overall_result": obj.overall_result.name,
+            "make_result": obj_to_dict(obj.make_result),
+            "model_result": obj_to_dict(obj.model_result),
+            "year_result": obj_to_dict(obj.year_result),
+        }
+    elif isinstance(obj, ComparisonResult):
+        return {
+            "match_result": obj.match_result.name,
+            "field_name": obj.field_name.name,
+            "plate_value": obj.plate_value,
+            "car_value": obj.car_value,
+        }
+    elif isinstance(obj, (MatchResult, ComparisonValue)):
+        return obj.name
+    else:
+        return obj

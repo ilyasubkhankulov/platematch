@@ -1,31 +1,32 @@
+
 import base64
-from io import BufferedReader
 import json
 import os
-from typing import Optional, Union
+from io import BufferedReader
+from typing import Annotated, Optional, Union
 
 import aiofiles
-from lib.database import ImageMetadata
-from lib.match_car import match_car
 
 # from lib.convert_image import heic_to_png_buffer
 from constants import TMP_DIR
 from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.encoders import jsonable_encoder
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse, Response
+from lib.database import (
+    ImageMetadata,
+    get_record,
+    get_records,
+    load_image,
+    save_image,
+    save_record,
+)
 from lib.image_preprocessing import make_png_buffer, open_heic_image, resize_image
 from lib.license_plate_recognition import get_license_plate
 from lib.lookup_plate import VinResponse, lookup_plate
+from lib.match_car import CarMatch, match_car
 from lib.recognize_car import recognize_car
-from lib.database import save_record, save_image, load_image, get_record
 from pydantic import BaseModel
-from fastapi.encoders import jsonable_encoder
-from fastapi.responses import JSONResponse, Response
-
-from typing import Annotated
-from fastapi import Form
-
-from lib.match_car import CarMatch
-
 
 app = FastAPI()
 
@@ -68,7 +69,7 @@ async def upload_image(
     path = await save_to_disk(image, TMP_DIR)
     print("image saved to disk: ", path)
 
-    ## Getting license plate from the image
+    # Getting license plate from the image
     heic_image = open_heic_image(path)
     heic_resized = resize_image(heic_image)
     png_buffer = make_png_buffer(heic_resized)
@@ -120,6 +121,14 @@ async def incident_report(id: str = Form(...)):
         "info": match_report,
     }
     return response_data
+
+
+@app.get("/incidents")
+async def get_incidents():
+    records = get_records()
+
+    print(records)
+    return JSONResponse(content=records)
 
 
 # @app.post("/license-plate-ocr/")
