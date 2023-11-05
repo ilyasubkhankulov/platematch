@@ -19,6 +19,10 @@ from pydantic import BaseModel
 from fastapi.encoders import jsonable_encoder
 from fastapi.responses import JSONResponse
 
+from typing import Annotated
+from fastapi import Form
+
+
 app = FastAPI()
 
 origins = [
@@ -45,21 +49,19 @@ async def save_to_disk(image, tmp_dir):
     return path
 
 
-# class ImageMetadata(BaseModel):
-#     lat: str
-#     long: str
+class ImageMetadata(BaseModel):
+    lat: Union[float, None]
+    long: Union[float, None]
 
 
 @app.post("/upload/")
 async def upload_image(
-    image: UploadFile = File(...), metadata: Union[str, None] = File(None)
+    lat: Annotated[float, Form()],
+    long: Annotated[float, Form()],
+    image: UploadFile = File(...),
 ):
-    if metadata is not None:
-        metadata_dict = json.loads(metadata)
-        print("inputted metadata: ", metadata_dict)
-    else:
-        metadata_dict = None
-
+    print(lat)
+    print(long)
     path = await save_to_disk(image, TMP_DIR)
     print("image saved to disk: ", path)
 
@@ -97,7 +99,7 @@ async def upload_image(
     for vin_response in vin_responses:
         car_match = match_car(vin_response, car_recognition)
         json_data = jsonable_encoder(car_match)
-        save_record(car_match, metadata_dict)
+        save_record(car_match, ImageMetadata(lat=lat, long=long))
         return JSONResponse(content=json_data)
 
 
