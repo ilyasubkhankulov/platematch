@@ -19,7 +19,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <div className="flex flex-col">
+    <div className="flex flex-col items-center w-screen">
       <StreetMap data={data} />
       <IncidentTable data={data} />
     </div>

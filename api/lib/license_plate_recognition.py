@@ -113,6 +113,7 @@ def get_license_plate(image: BytesIO) -> LicensePlateResponse:
         return LicensePlateResponse(status=ResponseStatus.TOO_MANY_REQUESTS, data=None)
     else:
         data = response.json()
+        print(f"DATA: {data}")
         return LicensePlateResponse(
             status=ResponseStatus.OK, data=LicensePlateData(**data)
         )

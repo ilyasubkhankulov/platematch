@@ -248,6 +248,7 @@ class _CameraResultWidgetState extends State<CameraResultWidget> {
                 ),
                 Text(
                   widget.cameraResult.testResult,
+                  textAlign: TextAlign.center,
                   style: TextStyle(fontSize: 32),
                 ),
                 Spacer()
