@@ -10,7 +10,7 @@ import {
     Th,
     Td,
     TableContainer,
-    VStack,
+    Stack,
     Image, } from '@chakra-ui/react';
 import { useParams } from 'react-router-dom';
 import { CarMatch, MatchResult } from './types';
@@ -77,16 +77,14 @@ const SingleIncidentView = () => {
   }, [id])
 
   return (
-    <VStack>
-        <Flex p={4}>
+    <Stack>
         <Spacer p={4} />
-        </Flex>
         <Flex>
         {loading ? 
             <Spinner size="xl" /> : null
         }
         {carImageSrc ? 
-            <Image src={carImageSrc} alt="Image Preview" boxSize="300px" />
+            <Image borderRadius='lg' src={carImageSrc} alt="Image Preview" boxSize="300px" />
         : null}
         {matchResponse ? 
             <TableContainer>
@@ -123,7 +121,7 @@ const SingleIncidentView = () => {
             </TableContainer>
         : null}
         </Flex>
-    </VStack>
+    </Stack>
   );
 };
 
