@@ -178,6 +178,15 @@ for output in output_list:
 
 # df = pd.DataFrame(output_list)
 
+# Get simple counts of events based on camera_name from output_list
+camera_counts = {}
+for output in output_list:
+    camera_name = output['camera_name']
+    if camera_name not in camera_counts:
+        camera_counts[camera_name] = 0
+    camera_counts[camera_name] += 1
+
+
 object_dict = {}
 for output in output_list:
     detection_results = json.loads(output['detection_result'])
@@ -242,8 +251,11 @@ bucket_counts_df = pd.merge(bucket_counts_df, total_counts, on=[
 bucket_counts_df['percentage'] = bucket_counts_df['count'] / \
     bucket_counts_df['total'] * 100
 
-bucket_counts_df = bucket_counts_df[bucket_counts_df['day_of_week']
+bucket_counts_df = bucket_counts_df[bucket_counts_df['date_str']
                                     != '2023-11-11']
+
+bucket_counts_df = bucket_counts_df[bucket_counts_df['date_str']
+                                    != '2023-11-07']
 
 
 sns.set(style="whitegrid")
@@ -269,3 +281,12 @@ plt.title('Confidence Distribution of Cars and Trucks by Day and by Sun Phase')
 plt.savefig('Confidence_Distribution_per_Day_of_Week_and_Lighting.png',
             bbox_inches='tight')
 plt.close()
+
+# create a normalized list of car and truck objects from the output_list
+# crop each image to the bounding box of the car or truck
+# save the cropped image to a new directory
+# create a list of the cropped images
+# run the cropped images through the license plate recognition model
+# run the cropped images through the car recognition model
+# for each recognized plate, run through DMV database
+# create a funnel visualization for performance of each step
