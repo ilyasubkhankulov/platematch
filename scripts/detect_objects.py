@@ -242,10 +242,23 @@ bucket_counts_df['percentage'] = bucket_counts_df['count'] / \
 
 sns.set(style="whitegrid")
 if 'percentage' in bucket_counts_df.columns:
-    bar_plot = sns.barplot(x='day_of_week', y='percentage', hue='lighting',
-                           data=bucket_counts_df, palette="muted")
+    # Pivot the dataframe to create a 100% stacked bar chart
+    pivot_df = bucket_counts_df.pivot_table(
+        index=['day_of_week', 'lighting'], columns='bucket', values='percentage')
+    pivot_df = pivot_df.div(pivot_df.sum(axis=1), axis=0).multiply(100)
+    # Sort the dataframe by lighting
+    pivot_df = pivot_df.sort_values(by='lighting')
+
+    # Group the bar charts by lighting with horizontal spacing
+    unique_lighting = pivot_df.index.get_level_values('lighting').unique()
+    for i, lighting in enumerate(unique_lighting):
+        plt.figure(i)
+        df_lighting = pivot_df.xs(lighting, level='lighting')
+        df_lighting.plot(kind='bar', stacked=True, colormap='RdYlGn')
+        plt.title(
+            f'Confidence Distribution per Day of Week and Lighting ({lighting})')
+        plt.savefig(
+            f'Confidence_Distribution_per_Day_of_Week_and_Lighting_{lighting}.png')
 else:
     print("Error: 'percentage' column not found in the dataframe.")
-plt.title('Confidence Distribution per Day of Week and Lighting')
-plt.savefig('Confidence_Distribution_per_Day_of_Week_and_Lighting.png')
 plt.close()
