@@ -24,8 +24,13 @@ class SingletonFTP:
             # Flatten the path into a filename.
             local_file_path = os.path.join(dest, path.replace('/', '_'))
             os.makedirs(os.path.dirname(local_file_path), exist_ok=True)
-            with open(local_file_path, 'wb') as f:
-                self.connection.retrbinary('RETR ' + path, f.write)
+            # Check if the file already exists in the destination
+            if os.path.exists(local_file_path):
+                print(
+                    f"File {local_file_path} already exists, skipping download.")
+            else:
+                with open(local_file_path, 'wb') as f:
+                    self.connection.retrbinary('RETR ' + path, f.write)
             return
 
         # Ensure the destination directory exists.
