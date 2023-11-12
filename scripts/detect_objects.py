@@ -210,7 +210,6 @@ for object_name, outputs in object_dict.items():
                         bucket = '76-100%'
                     confidence_buckets[bucket].append(
                         (output['lighting'], output['datetime'], output['camera_name'], output['image_file'].split('/')[-1].split('.')[0]))
-
 # Create a dictionary to store the count of each bucket per day
 bucket_counts_per_day = {}
 for bucket, data in confidence_buckets.items():
@@ -218,14 +217,17 @@ for bucket, data in confidence_buckets.items():
         data, columns=['lighting', 'datetime', 'camera_name', 'image_filename'])
     df['date'] = pd.to_datetime(df['datetime'])
     df['day_of_week'] = df['date'].dt.day_name()
+    # Add date in unixtime for sorting later
+    df['date_str'] = df['date'].dt.strftime('%Y-%m-%d')
     df.set_index('day_of_week', inplace=True)
-    bucket_counts = df.groupby(['day_of_week', 'lighting']).size()
+    bucket_counts = df.groupby(['day_of_week', 'date_str', 'lighting']).size()
     bucket_counts_per_day[bucket] = bucket_counts
 
 bucket_counts_df = pd.DataFrame(bucket_counts_per_day)
 bucket_counts_df = bucket_counts_df.fillna(0)
 bucket_counts_df = bucket_counts_df.stack().reset_index()
-bucket_counts_df.columns = ['day_of_week', 'lighting', 'bucket', 'count']
+bucket_counts_df.columns = ['day_of_week', 'date_str',
+                            'lighting', 'bucket', 'count']
 
 # Calculate the total count for each day_of_week and lighting
 total_counts = bucket_counts_df.groupby(['day_of_week', 'lighting'])[
@@ -240,25 +242,30 @@ bucket_counts_df = pd.merge(bucket_counts_df, total_counts, on=[
 bucket_counts_df['percentage'] = bucket_counts_df['count'] / \
     bucket_counts_df['total'] * 100
 
+bucket_counts_df = bucket_counts_df[bucket_counts_df['day_of_week']
+                                    != '2023-11-11']
+
+
 sns.set(style="whitegrid")
 if 'percentage' in bucket_counts_df.columns:
     # Pivot the dataframe to create a 100% stacked bar chart
     pivot_df = bucket_counts_df.pivot_table(
-        index=['day_of_week', 'lighting'], columns='bucket', values='percentage')
+        index=['lighting', 'date_str'], columns='bucket', values='percentage')
     pivot_df = pivot_df.div(pivot_df.sum(axis=1), axis=0).multiply(100)
-    # Sort the dataframe by lighting
-    pivot_df = pivot_df.sort_values(by='lighting')
-
-    # Group the bar charts by lighting with horizontal spacing
-    unique_lighting = pivot_df.index.get_level_values('lighting').unique()
-    for i, lighting in enumerate(unique_lighting):
-        plt.figure(i)
-        df_lighting = pivot_df.xs(lighting, level='lighting')
-        df_lighting.plot(kind='bar', stacked=True, colormap='RdYlGn')
-        plt.title(
-            f'Confidence Distribution per Day of Week and Lighting ({lighting})')
-        plt.savefig(
-            f'Confidence_Distribution_per_Day_of_Week_and_Lighting_{lighting}.png')
+    # Sort the dataframe by date_str and lighting
+    # pivot_df = pivot_df.sort_values(by=['date_str', 'lighting'])
+    plot = pivot_df.plot(kind='bar', stacked=True, colormap='RdYlGn')
+    # Rotate x-axis labels for better visibility and adjust for auto-fit
+    labels = bucket_counts_df['lighting'] + ', ' + bucket_counts_df['date_str']
+    sorted_labels = sorted(labels.unique())
+    plt.xticks(ticks=range(len(sorted_labels)),
+               rotation=45, ha='right', labels=sorted_labels)
+    plt.tight_layout()
+    # Move the legend outside the plot
+    plt.legend(loc='center left', bbox_to_anchor=(1, 0.5))
 else:
     print("Error: 'percentage' column not found in the dataframe.")
+plt.title('Confidence Distribution of Cars and Trucks by Day and by Sun Phase')
+plt.savefig('Confidence_Distribution_per_Day_of_Week_and_Lighting.png',
+            bbox_inches='tight')
 plt.close()
