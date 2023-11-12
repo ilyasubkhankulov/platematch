@@ -74,7 +74,7 @@ class CarMatch(BaseModel):
         }
 
 
-# based on the plate lookup response and the car lookup response, 
+# based on the plate lookup response and the car lookup response,
 # determine if the car matches the plate
 def match_car(plate: VinResponse, car: CarRecognition) -> CarMatch:
     make_result = ComparisonResult(
@@ -82,7 +82,7 @@ def match_car(plate: VinResponse, car: CarRecognition) -> CarMatch:
             ComparisonValue.MAKE,
             plate.specifications.make,
             car.car.make
-            ),
+        ),
         field_name=ComparisonValue.MAKE,
         plate_value=plate.specifications.make,
         car_value=car.car.make,
@@ -133,7 +133,7 @@ def match_car(plate: VinResponse, car: CarRecognition) -> CarMatch:
     elif any(
             result.match_result == MatchResult.INDETERMINATE
             for result in results
-            ):
+    ):
         overall_result = MatchResult.INDETERMINATE
     else:
         overall_result = MatchResult.MATCH
@@ -174,9 +174,11 @@ def compare_field(
 
 
 def split_years(years_range):
-    start_year_str, end_year_str = years_range.split("-")
+    from datetime import datetime
+    start_year_str, end_year_str = years_range.split('-')
     start_year = int(start_year_str)
-    end_year = int(end_year_str)
+    # If end year is an empty string, make it the current year plus 1
+    end_year = int(end_year_str) if end_year_str else datetime.now().year + 1
     return start_year, end_year
 
 
