@@ -211,22 +211,41 @@ for object_name, outputs in object_dict.items():
                     confidence_buckets[bucket].append(
                         (output['lighting'], output['datetime'], output['camera_name'], output['image_file'].split('/')[-1].split('.')[0]))
 
-
-# Plot the distribution of confidence bucketed in 4 buckets based on the 'lighting' parameter and the date of the image
+# Create a dictionary to store the count of each bucket per day
+bucket_counts_per_day = {}
 for bucket, data in confidence_buckets.items():
-    df = pd.DataFrame(data, columns=['lighting',
-                                     'datetime',
-                                     'camera_name',
-                                     'image_filename'
-                                     ])
-    print(df)
-    df['date'] = pd.to_datetime(df['datetime']).dt.date
-    df.set_index('date', inplace=True)
-    grouped_df = df.groupby([df.index, 'lighting']).size().unstack()
-    # Set the style of seaborn plot
-    sns.set(style="whitegrid")
-    # Create a bar plot with seaborn
-    bar_plot = sns.barplot(data=grouped_df, palette="muted")
-    plt.title(f'Confidence Distribution for {bucket}')
-    plt.savefig(f'Confidence_Distribution_for_{bucket}.png')
-    plt.close()
+    df = pd.DataFrame(
+        data, columns=['lighting', 'datetime', 'camera_name', 'image_filename'])
+    df['date'] = pd.to_datetime(df['datetime'])
+    df['day_of_week'] = df['date'].dt.day_name()
+    df.set_index('day_of_week', inplace=True)
+    bucket_counts = df.groupby(['day_of_week', 'lighting']).size()
+    bucket_counts_per_day[bucket] = bucket_counts
+
+bucket_counts_df = pd.DataFrame(bucket_counts_per_day)
+bucket_counts_df = bucket_counts_df.fillna(0)
+bucket_counts_df = bucket_counts_df.stack().reset_index()
+bucket_counts_df.columns = ['day_of_week', 'lighting', 'bucket', 'count']
+
+# Calculate the total count for each day_of_week and lighting
+total_counts = bucket_counts_df.groupby(['day_of_week', 'lighting'])[
+    'count'].sum().reset_index()
+total_counts.columns = ['day_of_week', 'lighting', 'total']
+
+# Merge the total counts back to the original dataframe
+bucket_counts_df = pd.merge(bucket_counts_df, total_counts, on=[
+                            'day_of_week', 'lighting'])
+
+# Calculate the percentage
+bucket_counts_df['percentage'] = bucket_counts_df['count'] / \
+    bucket_counts_df['total'] * 100
+
+sns.set(style="whitegrid")
+if 'percentage' in bucket_counts_df.columns:
+    bar_plot = sns.barplot(x='day_of_week', y='percentage', hue='lighting',
+                           data=bucket_counts_df, palette="muted")
+else:
+    print("Error: 'percentage' column not found in the dataframe.")
+plt.title('Confidence Distribution per Day of Week and Lighting')
+plt.savefig('Confidence_Distribution_per_Day_of_Week_and_Lighting.png')
+plt.close()
