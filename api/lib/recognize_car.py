@@ -69,6 +69,8 @@ def recognize_car(image_bytes: BytesIO) -> Union[CarRecognition, None]:
         "https://carnet.ai/recognize-file", headers=headers, files=files
     )
 
+    print('car recogniton: ', response.json())
+
     if response.status_code != 200:
         return None
 
