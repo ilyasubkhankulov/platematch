@@ -19,7 +19,8 @@ class SingletonFTP:
     def download_all(self, path, dest):
         try:
             self.connection.cwd(path)
-        except error_perm:
+        except error_perm as e:
+            print(f"FTP error: {e}")
             # This is a file, not a directory.
             # Flatten the path into a filename.
             local_file_path = os.path.join(dest, path.replace('/', '_'))
@@ -41,6 +42,7 @@ class SingletonFTP:
         items = self.connection.nlst()
 
         for item in items:
+            print('Downloading file: ', os.path.join(path, item))
             # Recursively download files/directories.
             self.download_all(path + '/' + item, dest)
 
