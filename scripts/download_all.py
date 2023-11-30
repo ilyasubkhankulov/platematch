@@ -11,4 +11,4 @@ password = os.getenv('FTP_PASSWORD')
 
 if __name__ == '__main__':
     ftp = SingletonFTP(host, username, password)
-    ftp.download_all('/files', 'tmp')
+    ftp.download_all('/files/files-mailseth', 'tmp')
