@@ -12,6 +12,11 @@ FROM runpod/base:0.4.0-cuda11.8.0
 # RUN /bin/bash /setup.sh && \
 #     rm /setup.sh
 
+COPY builder/download_model.sh /download_model.sh
+RUN /bin/bash /download_model.sh && \
+    rm /download_model.sh
+
+
 
 # Python dependencies
 COPY builder/requirements.txt /requirements.txt

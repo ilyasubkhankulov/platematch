@@ -5,8 +5,12 @@ from pathlib import Path
 import requests
 import runpod
 import torch
+from ultralytics import YOLO
 
-model = torch.hub.load("ultralytics/yolov5", "yolov5s")
+# Load a model from the filesystem
+model = YOLO('/cache/yolov8n.pt')  # load a local model
+# model = torch.hub.load("ultralytics/yolov5", "yolov5s")
+
 # If your handler runs inference on a model, load the model here.
 # You will want models to be loaded into memory before starting serverless.
 
