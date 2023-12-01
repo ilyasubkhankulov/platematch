@@ -1,4 +1,4 @@
-image = yolov8-worker
+image = yolov8
 version = latest
 
 build:
@@ -8,5 +8,5 @@ run-image:
 	docker run -it $(image):$(version)
 
 push-image:
-	docker tag $(image):$(version) registry.ilya.cloud/$(image):$(version)
-	docker push registry.ilya.cloud/$(image):$(version)
+	docker tag $(image):$(version) ilyasubkhankulov/$(image):$(version)
+	docker push ilyasubkhankulov/$(image):$(version)

@@ -1,4 +1,4 @@
-""" Example handler file. """
+import json
 import tempfile
 from pathlib import Path
 
@@ -8,7 +8,7 @@ import torch
 from ultralytics import YOLO
 
 # Load a model from the filesystem
-model = YOLO('/cache/yolov8n.pt')  # load a local model
+model = YOLO('./yolov8n.pt')  # load a local model
 # model = torch.hub.load("ultralytics/yolov5", "yolov5s")
 
 # If your handler runs inference on a model, load the model here.
@@ -21,24 +21,21 @@ def object_detection(img_path):
 
     # Inference
     results = model(img_path)
+    results_json_list = [json.loads(result.tojson()) for result in results]
 
-    print(results.print)
-    print(results.xyxy[0])
-    # Results
-    # results.print()  # or .show(), .save(), .crop(), .pandas(), etc.
-    # Return list of objects detected with bounding boxes
-    return results  # img1 predictions (tensor)
+    print('results_json_list', results_json_list)
+    return results_json_list
 
 
 def download_from_url(url):
 
-    # Download the file from `url` and save it locally under `file_name`:
+    # Download the file from `url` and save it locally with a .jpg extension:
     with requests.get(url, stream=True) as r:
         r.raise_for_status()
-        with tempfile.NamedTemporaryFile(delete=False) as f:
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.jpg') as f:
             for chunk in r.iter_content(chunk_size=8192):
                 f.write(chunk)
-            # Return the path to the downloaded file
+            # Return the path to the downloaded file with .jpg extension
             return Path(f.name)
 
 
@@ -47,9 +44,9 @@ def handler(job):
     job_input = job['input']
 
     image_url = job_input.get('image_url')
-
+    # print(image_url)
     image_path = download_from_url(image_url)
-
+    # print(image_path)
     results = object_detection(image_path)
 
     return results
