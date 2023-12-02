@@ -8,7 +8,7 @@ import torch
 from ultralytics import YOLO
 
 # Load a model from the filesystem
-model = YOLO('./yolov8n.pt')  # load a local model
+model = YOLO('/cache/yolov8n.pt')  # load a local model
 # model = torch.hub.load("ultralytics/yolov5", "yolov5s")
 
 # If your handler runs inference on a model, load the model here.
