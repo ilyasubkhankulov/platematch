@@ -58,3 +58,4 @@ tzdata==2023.3
 ultralytics==8.0.208
 urllib3==2.0.7
 wcwidth==0.2.9
+google-cloud-vision==3.4.5
